@@ -5,3 +5,4 @@ require __DIR__ . '/../src/View.php';
 require __DIR__ . '/../src/ErrorView.php';
 require __DIR__ . '/../src/Mailer.php';
 require __DIR__ . '/../src/UserController.php';
+require __DIR__ . '/../src/UsersTableDataGateway.php';
