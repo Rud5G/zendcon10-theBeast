@@ -16,8 +16,8 @@ class UserController
             return new ErrorView('resetPassword', 'No email specified');
         }
     
-        $gateway = new UsersTableDataGateway();
-        $record = $gateway->findUser($db, $_POST['email']);
+        $gateway = new UsersTableDataGateway($db);
+        $record = $gateway->findUser($_POST['email']);
 
         if ($record === FALSE) {
             return new ErrorView('resetPassword', 'No user with email ' . $_POST['email']);
@@ -25,13 +25,7 @@ class UserController
 
         $code = CryptHelper::getConfirmationCode();
 
-        $statement = $db->prepare('UPDATE Users SET code=:code WHERE email=:email;');
-
-        $statement->bindValue(':code', $code, PDO::PARAM_STR);
-
-        $statement->bindValue(':email', $_POST['email'], PDO::PARAM_STR);
-
-        $statement->execute();
+        $record = $gateway->updateUser($code, $_POST['email']);
         
         $mailer->sendMail($_POST['email'], 'Password Reset', 'Confirmation code: ' . $code);
 
@@ -41,12 +35,27 @@ class UserController
 
 class UsersTableDataGateway
 {
-    public function findUser($db, $email)
+    public function __construct(PDO $db)
     {
-        $statement = $db->prepare('SELECT * FROM Users WHERE email=:email;');
+        $this->db = $db;
+    }
+
+    public function findUser($email)
+    {
+        $statement = $this->db->prepare('SELECT * FROM Users WHERE email=:email;');
 
         $statement->bindValue(':email', $email, PDO::PARAM_STR);
         $statement->execute();
         return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    public function updateUser($code, $email)
+    {
+        $statement = $this->db->prepare('UPDATE Users SET code=:code WHERE email=:email;');
+
+        $statement->bindValue(':code', $code, PDO::PARAM_STR);
+        $statement->bindValue(':email', $email, PDO::PARAM_STR);
+
+        $statement->execute();
     }
 }
