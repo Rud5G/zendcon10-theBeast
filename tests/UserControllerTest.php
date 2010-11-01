@@ -38,6 +38,13 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
         $this->assertType('ErrorView', $view);
     }
 
+    public function testDisplaysErrorWhenEmailIsUnknown()
+    {
+        $_POST['email'] = 'bill@microsoft.com';
+        $view = $this->controller->resetPasswordAction($this->db, $this->mailer);
+        $this->assertType('ErrorView', $view);
+    }
+
     public function testDisplaysViewWhenEmailAddressGiven()
     {
         $this->mailer->expects($this->once())
