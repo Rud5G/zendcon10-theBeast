@@ -12,7 +12,7 @@ class UserController
 {
     public function resetPasswordAction($db, $mailer)
     {
-        if (!isset($_POST['email'])) {
+        if (empty($_POST['email'])) {
             return new ErrorView('resetPassword', 'No email specified');
         }
     
