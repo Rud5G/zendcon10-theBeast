@@ -16,12 +16,8 @@ class UserController
             return new ErrorView('resetPassword', 'No email specified');
         }
     
-//        $db = new PDO(Configuration::get('DSN'));
-        $statement = $db->prepare('SELECT * FROM Users WHERE email=:email;');
-
-        $statement->bindValue(':email', $_POST['email'], PDO::PARAM_STR);
-        $statement->execute();
-        $record = $statement->fetch(PDO::FETCH_ASSOC);
+        $gateway = new UsersTableDataGateway();
+        $record = $gateway->findUser($db, $_POST['email']);
 
         if ($record === FALSE) {
             return new ErrorView('resetPassword', 'No user with email ' . $_POST['email']);
@@ -40,5 +36,17 @@ class UserController
         $mailer->sendMail($_POST['email'], 'Password Reset', 'Confirmation code: ' . $code);
 
         return new View('passwordResetRequested');
+    }
+}
+
+class UsersTableDataGateway
+{
+    public function findUser($db, $email)
+    {
+        $statement = $db->prepare('SELECT * FROM Users WHERE email=:email;');
+
+        $statement->bindValue(':email', $email, PDO::PARAM_STR);
+        $statement->execute();
+        return $statement->fetch(PDO::FETCH_ASSOC);
     }
 }

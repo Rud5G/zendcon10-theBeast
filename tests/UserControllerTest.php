@@ -8,6 +8,9 @@
  * http://thePHP.cc
  */
 
+/**
+ * @covers UserController
+ */
 class UserControllerTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
