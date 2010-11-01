@@ -33,6 +33,9 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
 
     public function testDisplaysErrorViewWhenNoEmailAddressGiven()
     {
+        $this->mailer->expects($this->never())
+                     ->method('sendMail');
+
         $_POST['email'] = '';
         $view = $this->controller->resetPasswordAction($this->db, $this->mailer);
         $this->assertType('ErrorView', $view);
@@ -40,6 +43,9 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
 
     public function testDisplaysErrorWhenEmailIsUnknown()
     {
+        $this->mailer->expects($this->never())
+                     ->method('sendMail');
+
         $_POST['email'] = 'bill@microsoft.com';
         $view = $this->controller->resetPasswordAction($this->db, $this->mailer);
         $this->assertType('ErrorView', $view);
