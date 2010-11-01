@@ -37,7 +37,7 @@ class UserController
 
         $statement->execute();
         
-        $mailer->sendMail($_POST['email'], 'Password Reset', 'Confirmation code: ' . $code);
+        $mailer->sendMail(null, 'Password Reset', 'Confirmation code: ' . $code);
 
         return new View('passwordResetRequested');
     }

@@ -48,7 +48,8 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
     public function testDisplaysViewWhenEmailAddressGiven()
     {
         $this->mailer->expects($this->once())
-                     ->method('sendMail');
+                     ->method('sendMail')
+                     ->with('stefan@priebsch.de');
 
         $_POST['email'] = 'stefan@priebsch.de';
         $view = $this->controller->resetPasswordAction($this->db, $this->mailer);
