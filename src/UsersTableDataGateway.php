@@ -32,6 +32,6 @@ class UsersTableDataGateway
         $statement->bindValue(':code', $code, PDO::PARAM_STR);
         $statement->bindValue(':email', $email, PDO::PARAM_STR);
 
-        $statement->execute();
+        return $statement->execute();
     }
 }

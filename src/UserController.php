@@ -10,14 +10,22 @@
 
 class UserController
 {
-    public function resetPasswordAction($db, $mailer)
+    protected $gateway;
+    protected $mailer;
+
+    public function __construct(UsersTableDataGateway $gateway, Mailer $mailer)
+    {
+        $this->gateway = $gateway;
+        $this->mailer = $mailer;
+    }
+    
+    public function resetPasswordAction()
     {
         if (empty($_POST['email'])) {
             return new ErrorView('resetPassword', 'No email specified');
         }
     
-        $gateway = new UsersTableDataGateway($db);
-        $record = $gateway->findUser($_POST['email']);
+        $record = $this->gateway->findUser($_POST['email']);
 
         if ($record === FALSE) {
             return new ErrorView('resetPassword', 'No user with email ' . $_POST['email']);
@@ -25,9 +33,9 @@ class UserController
 
         $code = CryptHelper::getConfirmationCode();
 
-        $record = $gateway->updateUser($code, $_POST['email']);
+        $this->gateway->updateUser($code, $_POST['email']);
         
-        $mailer->sendMail($_POST['email'], 'Password Reset', 'Confirmation code: ' . $code);
+        $this->mailer->sendMail($_POST['email'], 'Password Reset', 'Confirmation code: ' . $code);
 
         return new View('passwordResetRequested');
     }

@@ -22,8 +22,12 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
         Configuration::init(array('DSN' => 'sqlite::memory:'));
 
         $this->mailer = $this->getMock('Mailer');
+
+        $this->gateway = $this->getMockBuilder('UsersTableDataGateway')
+                              ->disableOriginalConstructor()
+                              ->getMock();
         
-        $this->controller = new UserController;
+        $this->controller = new UserController($this->gateway, $this->mailer);
     }
 
     protected function tearDown()
@@ -40,7 +44,7 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
                      ->method('sendMail');
 
         $_POST['email'] = '';
-        $view = $this->controller->resetPasswordAction($this->db, $this->mailer);
+        $view = $this->controller->resetPasswordAction();
         $this->assertType('ErrorView', $view);
     }
 
@@ -49,8 +53,13 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
         $this->mailer->expects($this->never())
                      ->method('sendMail');
 
+        $this->gateway->expects($this->once())
+                      ->method('findUser')
+                      ->with('bill@microsoft.com')
+                      ->will($this->returnValue(FALSE));
+
         $_POST['email'] = 'bill@microsoft.com';
-        $view = $this->controller->resetPasswordAction($this->db, $this->mailer);
+        $view = $this->controller->resetPasswordAction();
         $this->assertType('ErrorView', $view);
     }
 
@@ -61,7 +70,7 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
                      ->with('stefan@priebsch.de');
 
         $_POST['email'] = 'stefan@priebsch.de';
-        $view = $this->controller->resetPasswordAction($this->db, $this->mailer);
+        $view = $this->controller->resetPasswordAction();
         $this->assertType('View', $view);
     }
 }
