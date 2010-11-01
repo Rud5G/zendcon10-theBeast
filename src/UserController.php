@@ -10,13 +10,13 @@
 
 class UserController
 {
-    public function resetPasswordAction()
+    public function resetPasswordAction($db, $mailer)
     {
         if (!isset($_POST['email'])) {
             return new ErrorView('resetPassword', 'No email specified');
         }
     
-        $db = new PDO(Configuration::get('DSN'));
+//        $db = new PDO(Configuration::get('DSN'));
         $statement = $db->prepare('SELECT * FROM Users WHERE email=:email;');
 
         $statement->bindValue(':email', $_POST['email'], PDO::PARAM_STR);
@@ -37,8 +37,16 @@ class UserController
 
         $statement->execute();
         
-        mail($_POST['email'], 'Password Reset', 'Confirmation code: ' . $code);
+        $mailer->sendMail($_POST['email'], 'Password Reset', 'Confirmation code: ' . $code);
 
         return new View('passwordResetRequested');
+    }
+}
+
+class Mailer
+{
+    public function sendMail($email, $subject, $body)
+    {
+        mail($email, $subject, $body);
     }
 }

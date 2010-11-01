@@ -18,6 +18,8 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
 
         Configuration::init(array('DSN' => 'sqlite::memory:'));
 
+        $this->mailer = $this->getMock('Mailer');
+        
         $this->controller = new UserController;
     }
 
@@ -32,14 +34,17 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
     public function testDisplaysErrorViewWhenNoEmailAddressGiven()
     {
         $_POST['email'] = '';
-        $view = $this->controller->resetPasswordAction();
+        $view = $this->controller->resetPasswordAction($this->db, $this->mailer);
         $this->assertType('ErrorView', $view);
     }
 
     public function testDisplaysViewWhenEmailAddressGiven()
     {
+        $this->mailer->expects($this->once())
+                     ->method('sendMail');
+
         $_POST['email'] = 'stefan@priebsch.de';
-        $view = $this->controller->resetPasswordAction();
+        $view = $this->controller->resetPasswordAction($this->db, $this->mailer);
         $this->assertType('View', $view);
     }
 }
