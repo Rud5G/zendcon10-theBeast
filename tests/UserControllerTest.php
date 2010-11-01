@@ -54,11 +54,11 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
                      ->method('sendMail');
 
         $this->gateway->expects($this->once())
-                      ->method('findUser')
-                      ->with('bill@microsoft.com')
+                      ->method('userExists')
+                      ->with('stefan@priebsch.de')
                       ->will($this->returnValue(FALSE));
 
-        $_POST['email'] = 'bill@microsoft.com';
+        $_POST['email'] = 'stefan@priebsch.de';
         $view = $this->controller->resetPasswordAction();
         $this->assertType('ErrorView', $view);
     }
@@ -68,6 +68,15 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
         $this->mailer->expects($this->once())
                      ->method('sendMail')
                      ->with('stefan@priebsch.de');
+
+        $this->gateway->expects($this->once())
+                      ->method('userExists')
+                      ->with('stefan@priebsch.de')
+                      ->will($this->returnValue(TRUE));
+
+        $this->gateway->expects($this->once())
+                      ->method('updateUser')
+                      ->with();
 
         $_POST['email'] = 'stefan@priebsch.de';
         $view = $this->controller->resetPasswordAction();

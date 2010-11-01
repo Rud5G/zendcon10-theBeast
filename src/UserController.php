@@ -25,9 +25,7 @@ class UserController
             return new ErrorView('resetPassword', 'No email specified');
         }
     
-        $record = $this->gateway->findUser($_POST['email']);
-
-        if ($record === FALSE) {
+        if (!$this->gateway->userExists($_POST['email'])) {
             return new ErrorView('resetPassword', 'No user with email ' . $_POST['email']);
         }
 

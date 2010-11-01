@@ -16,13 +16,14 @@ class UsersTableDataGateway
         $this->db = $db;
     }
 
-    public function findUser($email)
+    public function userExists($email)
     {
-        $statement = $this->db->prepare('SELECT * FROM Users WHERE email=:email;');
+        $statement = $this->db->prepare('SELECT email FROM Users WHERE email=:email;');
 
         $statement->bindValue(':email', $email, PDO::PARAM_STR);
         $statement->execute();
-        return $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $statement->fetch(PDO::FETCH_ASSOC) !== false;
     }
     
     public function updateUser($code, $email)
