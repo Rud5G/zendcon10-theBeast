@@ -42,11 +42,3 @@ class UserController
         return new View('passwordResetRequested');
     }
 }
-
-class Mailer
-{
-    public function sendMail($email, $subject, $body)
-    {
-        mail($email, $subject, $body);
-    }
-}
