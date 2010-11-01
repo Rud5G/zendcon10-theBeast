@@ -32,30 +32,3 @@ class UserController
         return new View('passwordResetRequested');
     }
 }
-
-class UsersTableDataGateway
-{
-    public function __construct(PDO $db)
-    {
-        $this->db = $db;
-    }
-
-    public function findUser($email)
-    {
-        $statement = $this->db->prepare('SELECT * FROM Users WHERE email=:email;');
-
-        $statement->bindValue(':email', $email, PDO::PARAM_STR);
-        $statement->execute();
-        return $statement->fetch(PDO::FETCH_ASSOC);
-    }
-    
-    public function updateUser($code, $email)
-    {
-        $statement = $this->db->prepare('UPDATE Users SET code=:code WHERE email=:email;');
-
-        $statement->bindValue(':code', $code, PDO::PARAM_STR);
-        $statement->bindValue(':email', $email, PDO::PARAM_STR);
-
-        $statement->execute();
-    }
-}
