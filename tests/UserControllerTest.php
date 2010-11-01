@@ -21,13 +21,16 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
 
         Configuration::init(array('DSN' => 'sqlite::memory:'));
 
+
+        $this->cryptHelper = $this->getMock('CryptHelper');
+
         $this->mailer = $this->getMock('Mailer');
 
         $this->gateway = $this->getMockBuilder('UsersTableDataGateway')
                               ->disableOriginalConstructor()
                               ->getMock();
         
-        $this->controller = new UserController($this->gateway, $this->mailer);
+        $this->controller = new UserController($this->gateway, $this->mailer, $this->cryptHelper);
     }
 
     protected function tearDown()
@@ -76,7 +79,11 @@ class UserControllerTest extends PHPUnit_Framework_TestCase
 
         $this->gateway->expects($this->once())
                       ->method('updateUser')
-                      ->with();
+                      ->with('123', 'stefan@priebsch.de');
+
+        $this->cryptHelper->expects($this->once())
+                          ->method('getConfirmationCode')
+                          ->will($this->returnValue('123'));
 
         $_POST['email'] = 'stefan@priebsch.de';
         $view = $this->controller->resetPasswordAction();

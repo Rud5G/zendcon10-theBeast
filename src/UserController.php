@@ -13,10 +13,11 @@ class UserController
     protected $gateway;
     protected $mailer;
 
-    public function __construct(UsersTableDataGateway $gateway, Mailer $mailer)
+    public function __construct(UsersTableDataGateway $gateway, Mailer $mailer, CryptHelper $cryptHelper)
     {
         $this->gateway = $gateway;
         $this->mailer = $mailer;
+        $this->cryptHelper = $cryptHelper;
     }
     
     public function resetPasswordAction()
@@ -29,7 +30,7 @@ class UserController
             return new ErrorView('resetPassword', 'No user with email ' . $_POST['email']);
         }
 
-        $code = CryptHelper::getConfirmationCode();
+        $code = $this->cryptHelper->getConfirmationCode();
 
         $this->gateway->updateUser($code, $_POST['email']);
         
